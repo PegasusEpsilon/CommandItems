@@ -1,6 +1,6 @@
-package com.pegasusepsilon.commanditems.ItemEvent;
+package pegasusepsilon.commanditems;
 
-//import com.pegasusepsilon.commanditems.Core;
+import pegasusepsilon.commanditems.Core;
 
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.client.event.MouseEvent;
@@ -20,6 +20,6 @@ import org.apache.logging.log4j.Logger;
 public class ItemEvent {
 	@SubscribeEvent
 	public static void mouseEvent (MouseEvent event) {
-//		Core.logger.info("Mouse Event");
+		Core.logger.info("Mouse Event");
 	}
 }

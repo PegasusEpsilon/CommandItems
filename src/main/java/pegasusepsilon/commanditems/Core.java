@@ -1,7 +1,6 @@
-package com.pegasusepsilon.commanditems.Core;
+package pegasusepsilon.commanditems;
 
 import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.common.Mod.Instance;
 import net.minecraftforge.fml.common.Mod.EventHandler;
 
 import net.minecraftforge.fml.common.ModMetadata;
@@ -14,11 +13,9 @@ import org.apache.logging.log4j.Logger;
 
 @Mod(modid = Core.MODID, name = Core.NAME, version = Core.VERSION)
 public class Core {
-	@Instance(Core.MODID)
-	public static Instance instance;
 	public static final String MODID = "commanditems";
 	public static final String NAME = "Command Items";
-	public static final String VERSION = "1.0";
+	public static final String VERSION = "1.12.2.0";
 
 	static Logger logger;
 
@@ -29,7 +26,6 @@ public class Core {
 		data.version = VERSION;
 		data.description = "Items that run commands, from NBT, upon use";
 		data.url = "http://pegasus.pimpninjas.org/minecraft/commanditems/";
-		data.updateUrl = "http://pegasus.pimpninjas.org/minecraft/commanditems/CommandItems-1.12.2-1.0.jar";
 		String author = "Pegasus Epsion <pegasus@pimpninjas.org>";
 		data.authorList.add(author);
 		data.credits = author;

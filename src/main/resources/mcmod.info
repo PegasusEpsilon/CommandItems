@@ -2,13 +2,13 @@
 {
   "modid": "commanditems",
   "name": "Command Items",
-  "description": "Items that run commands, stored in NBT, upon use",
+  "description": "Items that run commands, from NBT, upon use",
   "version": "${version}",
   "mcversion": "${mcversion}",
-  "url": "http://pegasus.pimpninjas.org/code/java/pegasusepsilon/commanditems",
-  "updateUrl": "",
+  "url": "http://pegasus.pimpninjas.org/minecraft/commanditems/",
+  "updateUrl": "http://pegasus.pimpninjas.org/minecraft/commanditems/CommandItems-1.12.2-1.0.jar",
   "authorList": ["Pegasus Epsilon"],
-  "credits": "",
+  "credits": "Pegasus Epsilon",
   "logoFile": "",
   "screenshots": [],
   "dependencies": []
