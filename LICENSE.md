@@ -1,4 +1,4 @@
-###my license
+### my license
 
 So I thought about it for a long time, back when I started writing
 software, and I didn't really like the "shareware"-type licenses, which
@@ -28,7 +28,7 @@ one and a half to two times longer than the license itself, depending on
 if you call a hyphen a word seperator, which I do.
 
 
-###rationale
+### rationale
 
 The only thing that worried me with respect to my code is that people
 might go and alter it to do naughty things, and then send it around, and
@@ -86,7 +86,7 @@ away.**
 Bit of a tangent...
 
 
-###ownership
+### ownership
 
 When Thomas Jefferson set the steamroller of the United States Patent and
 Trademark Office (USPTO) into motion in (very) early 1790, he wasn't
@@ -176,7 +176,7 @@ apologize, and will one day write a more complete rant on the corruption
 of the USPTO. Back to my license.
 
 
-###back on track
+### back on track
 
 Using my name on software you wrote (my "brand") is fraud, so I don't have
 to cover that in my license. Nobody does, really. Fraud is fraud.
