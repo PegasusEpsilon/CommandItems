@@ -1,0 +1,16 @@
+[
+{
+  "modid": "commanditems",
+  "name": "Command Items",
+  "description": "Items that run commands, stored in NBT, upon use",
+  "version": "${version}",
+  "mcversion": "${mcversion}",
+  "url": "http://pegasus.pimpninjas.org/code/java/pegasusepsilon/commanditems",
+  "updateUrl": "",
+  "authorList": ["Pegasus Epsilon"],
+  "credits": "",
+  "logoFile": "",
+  "screenshots": [],
+  "dependencies": []
+}
+]
