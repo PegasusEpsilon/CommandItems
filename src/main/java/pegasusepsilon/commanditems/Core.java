@@ -1,6 +1,10 @@
 package pegasusepsilon.commanditems;
 
+import java.util.Map;
+import java.util.HashMap;
+
 import net.minecraft.util.EnumHand;
+import net.minecraft.util.math.RayTraceResult;
 
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.EventHandler;
@@ -20,13 +24,33 @@ public class Core {
 	public static final String MODID = "commanditems";
 	public static final String NAME = "Command Items";
 	public static final String VERSION = "1.12.2.0";
-	public static final String CMDNAME = "usecommanditem";
-	public static final String CMDFLAG = "commandItem";
-	public static final String CMDFIELD = "command";
-	// You don't want to cast int to enum? Fine, we'll do it the hard way.
-	public static final EnumHand[] hands = { EnumHand.MAIN_HAND, EnumHand.OFF_HAND };
+	static final String CMDNAME = "commanditem";
+	static final String CMDFLAG = "commandItem";
+	static final String CMDFIELD = "command";
+	static final CommandHandler commandHandler = new CommandHandler();
+	static final String[] methods = { "digCommands", "useCommands" };
 
-	static Logger logger;
+	private static Map<String, EnumHand> initHands() {
+		Map<String, EnumHand> hands = new HashMap<String, EnumHand>();
+		hands.put("MAIN_HAND", EnumHand.MAIN_HAND);
+		hands.put("OFF_HAND", EnumHand.OFF_HAND);
+		return hands;
+	};
+	static final Map<String, EnumHand> hands = initHands();
+
+	private static Map<String, RayTraceResult.Type> initHitTypes() {
+		Map<String, RayTraceResult.Type> hitTypes = new HashMap<String, RayTraceResult.Type>();
+		hitTypes.put("MISS", RayTraceResult.Type.MISS);
+		hitTypes.put("BLOCK", RayTraceResult.Type.BLOCK);
+		hitTypes.put("ENTITY", RayTraceResult.Type.ENTITY);
+		return hitTypes;
+	};
+	static final Map<String, RayTraceResult.Type> hitTypes = initHitTypes();
+
+	private static Logger logger;
+	static void debug (String message, Object... params) {
+		//logger.info(message, params);
+	}
 
 	private void mcModInfo (FMLPreInitializationEvent event) {
 		ModMetadata data = event.getModMetadata();
@@ -62,7 +86,7 @@ public class Core {
 	@EventHandler
 	public void serverStarting (FMLServerStartingEvent event) {
 		logger.info("{} {} serverStarting", NAME, VERSION);
-		event.registerServerCommand(new CommandHandler());
+		event.registerServerCommand(commandHandler);
 		logger.info("{} {} Command registration ({}) complete.", NAME, VERSION, CMDNAME);
 	}
 }

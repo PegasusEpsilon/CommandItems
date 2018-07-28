@@ -1,2 +1,5 @@
 run
+build.gradle
 .gradle
+build
+hs_err_pid*.log
