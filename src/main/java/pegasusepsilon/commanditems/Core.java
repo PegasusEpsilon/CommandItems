@@ -17,13 +17,13 @@ import net.minecraftforge.fml.common.event.FMLServerStartingEvent;
 
 import org.apache.logging.log4j.Logger;
 
-import pegasusepsilon.commanditems.CommandHandler;
+//import pegasusepsilon.commanditems.CommandHandler;
 
 @Mod(modid = Core.MODID, name = Core.NAME, version = Core.VERSION)
 public class Core {
 	public static final String MODID = "commanditems";
 	public static final String NAME = "Command Items";
-	public static final String VERSION = "1.12.2.0";
+	public static final String VERSION = "1.12.2.a2";
 	static final String CMDNAME = "commanditem";
 	static final String CMDFLAG = "commandItem";
 	static final String CMDFIELD = "command";
