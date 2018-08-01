@@ -23,7 +23,7 @@ import org.apache.logging.log4j.Logger;
 public class Core {
 	public static final String MODID = "commanditems";
 	public static final String NAME = "Command Items";
-	public static final String VERSION = "1.12.2.a4";
+	public static final String VERSION = "1.12.2.a7";
 	static final String CMDNAME = "commanditem";
 	static final String CMDFLAG = "commandItem";
 	static final String CMDFIELD = "command";
@@ -49,6 +49,7 @@ public class Core {
 
 	private static Logger logger;
 	static void debug (String message, Object... params) {
+		// DEBUG
 		//logger.info(message, params);
 	}
 
