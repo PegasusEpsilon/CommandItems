@@ -24,19 +24,8 @@ import net.minecraft.util.math.BlockPos;
 
 @Mod.EventBusSubscriber(modid = Core.MODID)
 public class PlayerInteractEventHandler {
+	// this is dumb, there should be a way to construct an interface that covers both PlayerEvent and AttackEntityEvent
 	// SERVER SIDE - ACTIVATES COMMAND DIRECTLY
-	private static void serverTriggerMethod (EntityPlayer player, EnumHand hand, String method, String target) {
-		if (player.world.isRemote) return;
-		Core.debug("PlayerInteractEvent: {} {} {}", player.getDisplayNameString(), method, target);
-		MinecraftServer server = player.world.getMinecraftServer();
-		try {
-			Core.commandHandler.execute(server, player, new String[]{hand.toString(), method, target});
-		} catch (CommandException e) {
-			Core.debug("Caught CommandException: {}");
-		}
-	}
-
-	// this is dumb, there should be a way to construct an event that contains a getTarget method.
 	private static void serverTriggerEntity (PlayerEvent event, EnumHand hand, String method, String target) {
 		EntityPlayer player = event.getEntityPlayer();
 		if (player.world.isRemote) return;
@@ -68,21 +57,26 @@ public class PlayerInteractEventHandler {
 		*/
 	}
 
+	// SERVER SIDE - ACTIVATES COMMAND DIRECTLY
+	private static void serverTriggerBlock (PlayerInteractEvent event, String method) {
+		EntityPlayer player = event.getEntityPlayer();
+		if (player.world.isRemote) return;
+		BlockPos t = event.getPos();
+		String target = t.getX() + " " + t.getY() + " " + t.getZ();
+		Core.debug("PlayerInteractEvent: {} {} {}", player.getDisplayNameString(), method, target);
+		Core.commandHandler.activateItem(player, event.getHand(), method, "BLOCK", target);
+	}
+
 	// BOTH SIDES fires on all block attack/destroy
 	@SubscribeEvent(priority = EventPriority.HIGHEST, receiveCanceled = true)
 	public static void playerInteractEventHandler (LeftClickBlock event) {
-		/*
-		if (player.world.isRemote) return;
-		Core.debug("PlayerInteractEvent.LeftClickBlock");
-		EntityPlayer player = event.getEntityPlayer();
-		CommandHandler.activateItem(plyaer, event.getHand(), "digCommands", "BLOCK", event.getTarget());
-		*/
-		serverTriggerMethod(event.getEntityPlayer(), event.getHand(), "digCommands", "BLOCK");
+		serverTriggerBlock((PlayerInteractEvent)event, "digCommands");
 	}
 
 	// BOTH SIDES fires on all block use/place
 	@SubscribeEvent(priority = EventPriority.HIGHEST, receiveCanceled = true)
 	public static void playerInteractEventHandler (RightClickBlock event) {
+		/*
 		EntityPlayer player = event.getEntityPlayer();
 		if (player.world.isRemote) return;
 		Core.debug("PlayerInteractEvent.RightClickBlock");
@@ -90,18 +84,22 @@ public class PlayerInteractEventHandler {
 		String target = t.getX() + " " + t.getY() + " " + t.getZ();
 		Core.debug("target: {}", target);
 		CommandHandler.activateItem(player, event.getHand(), "useCommands", "BLOCK", target);
-		//serverTriggerMethod(event.getEntityPlayer(), event.getHand(), "useCommands", "BLOCK");
+		*/
+		serverTriggerBlock((PlayerInteractEvent)event, "useCommands");
 	}
 
 	// CLIENT SIDE -- ACTIVATES COMMAND THROUGH CHAT
-	private static void clientTriggerMethod (EntityPlayer player, EnumHand hand, String method, String target) {
+	//private static void clientTriggerMethod (EntityPlayer player, EnumHand hand, String method, String target) {
+	private static void clientTriggerMethod (PlayerInteractEvent event, String method, String target) {
+		EntityPlayer player = event.getEntityPlayer();
 		if (!(player instanceof EntityPlayerSP)) {
 			Core.debug("invalid entity for sending commands...");
 			return;
 		}
-		Core.debug("CommandItem Client passing event ({} {} {}) to server...", hand.toString(), method, target);
+		String hand = event.getHand().toString();
+		Core.debug("CommandItem Client passing event ({} {} {}) to server...", hand, method, target);
 		((EntityPlayerSP)player).sendChatMessage(
-			"/" + Core.CMDNAME + " " + hand.toString() + " " + method + " " + target
+			"/" + Core.CMDNAME + " " + hand + " " + method + " " + target
 		);
 	}
 
@@ -109,13 +107,15 @@ public class PlayerInteractEventHandler {
 	@SubscribeEvent(priority = EventPriority.HIGHEST, receiveCanceled = true)
 	public static void playerInteractEventHandler (LeftClickEmpty event) {
 		Core.debug("PlayerInteractEvent.LeftClickEmpty");
-		clientTriggerMethod(event.getEntityPlayer(), event.getHand(), "digCommands", "MISS");
+		//clientTriggerMethod(event.getEntityPlayer(), event.getHand(), "digCommands", "MISS");
+		clientTriggerMethod((PlayerInteractEvent)event, "digCommands", "MISS");
 	}
 
 	// CLIENTSIDE fires on all use/place on empty space, for both hands
 	@SubscribeEvent(priority = EventPriority.HIGHEST, receiveCanceled = true)
 	public static void playerInteractEventHandler (RightClickEmpty event) {
 		Core.debug("PlayerInteractEvent.RightClickEmpty {}");
-		clientTriggerMethod(event.getEntityPlayer(), event.getHand(), "useCommands", "MISS");
+		//clientTriggerMethod(event.getEntityPlayer(), event.getHand(), "useCommands", "MISS");
+		clientTriggerMethod((PlayerInteractEvent)event, "useCommands", "MISS");
 	}
 }
