@@ -9,8 +9,6 @@ import net.minecraft.util.math.RayTraceResult;
 import net.minecraftforge.common.util.Constants;
 
 class NBTHelper {
-	//NBTHandler.hasActivator(event.getEntityPlayer().getHeldItem(event.getHand()), method, RayTraceResult.Type.BLOCK)
-
 	static NBTTagCompound getTypesForMethod (ItemStack item, int method) {
 		NBTTagCompound tag;
 		try { tag = item.getTagCompound().getCompoundTag("commandItem"); }
