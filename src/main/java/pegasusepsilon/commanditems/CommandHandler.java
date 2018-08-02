@@ -33,7 +33,7 @@ public class CommandHandler extends CommandBase {
 	@Override public String getName () { return Core.CMDNAME; }
 
 	@Override public String getUsage (ICommandSender sender) {
-		return "/" + Core.CMDNAME + "<hitCommands/useCommands> <ENTITY/BLOCK/MISS> Activates useCommand or digCommand bound to held CommandItem";
+		return "/" + Core.CMDNAME + "<MAIN_HAND/OFF_HAND> <hitCommands/useCommands> <ENTITY/BLOCK/MISS> Activates useCommand or digCommand bound to held CommandItem";
 	}
 
 	@Override public boolean checkPermission (MinecraftServer x, ICommandSender y) { return true; }

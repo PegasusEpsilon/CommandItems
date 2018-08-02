@@ -17,8 +17,6 @@ import net.minecraftforge.fml.common.event.FMLServerStartingEvent;
 
 import org.apache.logging.log4j.Logger;
 
-//import pegasusepsilon.commanditems.CommandHandler;
-
 @Mod(modid = Core.MODID, name = Core.NAME, version = Core.VERSION)
 public class Core {
 	public static final String MODID = "commanditems";
