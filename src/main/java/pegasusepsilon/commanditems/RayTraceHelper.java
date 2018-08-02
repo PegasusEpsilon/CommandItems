@@ -16,7 +16,7 @@ import net.minecraftforge.fml.common.event.FMLServerStartingEvent;
 import java.util.List;
 
 class RayTraceHelper {
-	// server-side entity raytracing, whee...
+	// server-side raytracing, whee...
 
 	static BlockPos rayTraceBlock (EntityPlayer player) {
 		double reach = player.getEntityAttribute(EntityPlayer.REACH_DISTANCE).getAttributeValue();
