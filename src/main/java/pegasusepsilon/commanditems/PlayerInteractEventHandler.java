@@ -13,88 +13,97 @@ import net.minecraftforge.event.entity.player.PlayerInteractEvent.RightClickBloc
 import net.minecraftforge.event.entity.player.PlayerInteractEvent.RightClickItem;
 // this one actually doesn't -- ALL clicks trigger.
 import net.minecraftforge.event.entity.player.PlayerInteractEvent.LeftClickEmpty;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.client.entity.EntityPlayerSP;
-/*
-import net.minecraft.server.MinecraftServer;
-import net.minecraft.world.World;
-import net.minecraft.command.CommandException;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.nbt.NBTTagList;
 import net.minecraft.item.ItemStack;
-*/
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.RayTraceResult;
 
 @Mod.EventBusSubscriber(modid = Core.MODID)
 public class PlayerInteractEventHandler {
-	// SERVER SIDE - ACTIVATES COMMAND DIRECTLY
-	private static void serverTriggerEntity (PlayerEvent event, EnumHand hand, String method, String target) {
+	// SERVER SIDE - ACTIVATE COMMAND DIRECTLY
+	private static void serverTrigger (PlayerEvent event, EnumHand hand, int method, RayTraceResult.Type type, String target) {
 		EntityPlayer player = event.getEntityPlayer();
 		if (player.world.isRemote) return;
-		Core.debug("EntityInteractEvent");
-		CommandHandler.activateItem(player, hand, method, "ENTITY", target);
+		ItemStack item = player.getHeldItem(hand);
+		if ( // Don't fire the OFF_HAND activator if the MAIN_HAND has one.
+			hand == EnumHand.OFF_HAND &&
+			NBTHelper.hasActivator(player.getHeldItem(EnumHand.MAIN_HAND), method, type)
+		) return;
+		// Here be deep voodoo
+		if (player.isSneaking() && NBTHelper.hasActivator(item, method, RayTraceResult.Type.MISS)) {
+			if (method == 0) type = RayTraceResult.Type.MISS;
+			else if (RayTraceResult.Type.MISS != type) return;
+		} else {
+			if (RayTraceResult.Type.MISS == type && (
+				NBTHelper.hasActivator(item, method, RayTraceResult.Type.BLOCK) &&
+				null != RayTraceHelper.rayTraceBlock(player) ||
+				NBTHelper.hasActivator(item, method, RayTraceResult.Type.ENTITY) &&
+				null != RayTraceHelper.rayTraceEntity(player)
+			)) return;
+		}
+		Core.commandHandler.activateItem(player, hand, method, type, target);
+	}
+
+	// SERVER SIDE - ACTIVATES COMMAND DIRECTLY
+	private static void serverTriggerEntity (EntityInteract event, int method) {
+		serverTrigger(event, event.getHand(), method, RayTraceResult.Type.ENTITY, event.getTarget().getUniqueID().toString());
 	}
 
 	// BOTH SIDES fires on all entity attack/destroy
 	@SubscribeEvent(priority = EventPriority.HIGHEST, receiveCanceled = true)
 	public static void playerInteractEventHandler (AttackEntityEvent event) {
-		serverTriggerEntity(event, EnumHand.MAIN_HAND, "digCommands", event.getTarget().getUniqueID().toString());
+		// EntityInteract has .getTarget() and .getHand()
+		// AttackEntityEvent has .getTarget(), but no .getHand()
+		// their shared ancestor, PlayerEvent, has neither.
+		// best thing we can do is construct a new EntityInteract event here.
+		serverTriggerEntity(new EntityInteract(
+			event.getEntityPlayer(), EnumHand.MAIN_HAND, event.getTarget()
+		), 0);
 	}
 
 	// BOTH SIDES fires on all entity use/place
 	@SubscribeEvent(priority = EventPriority.HIGHEST, receiveCanceled = true)
 	public static void playerInteractEventHandler (EntityInteract event) {
-		serverTriggerEntity(event, event.getHand(), "useCommands", event.getTarget().getUniqueID().toString());
+		serverTriggerEntity(event, 1);
 	}
 
 	// SERVER SIDE - ACTIVATES COMMAND DIRECTLY
-	private static void serverTriggerBlock (PlayerInteractEvent event, String method) {
-		EntityPlayer player = event.getEntityPlayer();
-		if (player.world.isRemote) return;
+	private static void serverTriggerBlock (PlayerInteractEvent event, int method) {
 		BlockPos t = event.getPos();
-		String target = t.getX() + " " + t.getY() + " " + t.getZ();
-		Core.debug("PlayerInteractEvent: {} {} {}", player.getDisplayNameString(), method, target);
-		Core.commandHandler.activateItem(player, event.getHand(), method, "BLOCK", target);
+		serverTrigger((PlayerEvent)event, event.getHand(), method, RayTraceResult.Type.BLOCK, t.getX() + " " + t.getY() + " " + t.getZ());
 	}
 
 	// BOTH SIDES fires on all block attack/destroy
 	@SubscribeEvent(priority = EventPriority.HIGHEST, receiveCanceled = true)
 	public static void playerInteractEventHandler (LeftClickBlock event) {
-		serverTriggerBlock((PlayerInteractEvent)event, "digCommands");
+		serverTriggerBlock((PlayerInteractEvent)event, 0);
 	}
 
 	// BOTH SIDES fires on all block use/place
 	@SubscribeEvent(priority = EventPriority.HIGHEST, receiveCanceled = true)
 	public static void playerInteractEventHandler (RightClickBlock event) {
-		serverTriggerBlock((PlayerInteractEvent)event, "useCommands");
+		serverTriggerBlock((PlayerInteractEvent)event, 1);
 	}
 
-	// CLIENT SIDE -- ACTIVATES COMMAND THROUGH CHAT
-	private static void clientTriggerMiss (PlayerInteractEvent event, String method) {
-		EntityPlayer player = event.getEntityPlayer();
-		if (!(player instanceof EntityPlayerSP)) {
-			Core.debug("invalid entity for sending commands...");
-			return;
-		}
-		String hand = event.getHand().toString();
-		Core.debug("CommandItem Client passing event ({} {} {}) to server...", hand, method, "MISS");
-		((EntityPlayerSP)player).sendChatMessage(
-			"/" + Core.CMDNAME + " " + hand + " " + method + " MISS"
-		);
+	// BOTH SIDES fires on all use/place on empty space, with a held item, for both hands
+	@SubscribeEvent(priority = EventPriority.HIGHEST, receiveCanceled = true)
+	public static void playerInteractEventHandler (RightClickItem event) {
+		serverTrigger(event, event.getHand(), 1, RayTraceResult.Type.MISS, null);
 	}
 
 	// CLIENTSIDE fires on all attack/destroy on empty space, with or without a held item, main hand only
+	// ACTIVATES COMMAND THROUGH CHAT
 	@SubscribeEvent(priority = EventPriority.HIGHEST, receiveCanceled = true)
 	public static void playerInteractEventHandler (LeftClickEmpty event) {
-		Core.debug("PlayerInteractEvent.LeftClickEmpty");
-		clientTriggerMiss(event, "digCommands");
+		EntityPlayer player = event.getEntityPlayer();
+		if (!(player instanceof EntityPlayerSP)) return;
+		if (!NBTHelper.isCommandItem(player, EnumHand.MAIN_HAND)) return;
+		((EntityPlayerSP)player).sendChatMessage(
+			"/" + Core.CMDNAME + " MAIN_HAND hitCommands MISS"
+		);
 	}
 
-	// CLIENTSIDE fires on all use/place on empty space, with a held item, for both hands
-	@SubscribeEvent(priority = EventPriority.HIGHEST, receiveCanceled = true)
-	public static void playerInteractEventHandler (RightClickItem event) {
-		Core.debug("PlayerInteractEvent.RightClickItem");
-		clientTriggerMiss(event, "useCommands");
-	}
 }

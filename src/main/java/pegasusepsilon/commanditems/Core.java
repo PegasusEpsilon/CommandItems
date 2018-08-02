@@ -23,12 +23,12 @@ import org.apache.logging.log4j.Logger;
 public class Core {
 	public static final String MODID = "commanditems";
 	public static final String NAME = "Command Items";
-	public static final String VERSION = "1.12.2.a7";
+	public static final String VERSION = "1.12.2.a8";
 	static final String CMDNAME = "commanditem";
 	static final String CMDFLAG = "commandItem";
 	static final String CMDFIELD = "command";
 	static final CommandHandler commandHandler = new CommandHandler();
-	static final String[] methods = { "digCommands", "useCommands" };
+	static final String[] methods = { "hitCommands", "useCommands" };
 
 	private static Map<String, EnumHand> initHands() {
 		Map<String, EnumHand> hands = new HashMap<String, EnumHand>();
@@ -50,7 +50,7 @@ public class Core {
 	private static Logger logger;
 	static void debug (String message, Object... params) {
 		// DEBUG
-		//logger.info(message, params);
+		logger.info(message, params);
 	}
 
 	private void mcModInfo (FMLPreInitializationEvent event) {
