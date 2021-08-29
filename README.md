@@ -1,3 +1,5 @@
+# DUE TO RECENT GITHUB POLICY CHANGES ALL MY PROJECTS HAVE BEEN MOVED TO [GITLAB](https://gitlab.com/pegasusepsilon)
+
 # CommandItems
 Voodoo Magic for Minecraft 1.12.2 server admins and map makers.
 
